@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
+
+
 const ClothingCategoryScreen = ({ navigation }) => {
   const [favorites, setFavorites] = useState(new Set());
 
@@ -20,7 +22,6 @@ const ClothingCategoryScreen = ({ navigation }) => {
     } else {
       newFavorites.add(id);
     }
-
     setFavorites(newFavorites);
   };
 
@@ -40,12 +41,27 @@ const ClothingCategoryScreen = ({ navigation }) => {
     ? clothingItems 
     : clothingItems.filter(item => item.category === selectedCategory);
 
+  // Navigate to product detail screen
+  const handleProductPress = (item) => {
+    navigation.navigate('ProductDetail', { 
+      productId: item.id,
+      product: item // Optional: pass the full product data
+    });
+  };
+
   const renderProduct = ({ item }) => (
-    <View style={styles.productCard}>
+    <TouchableOpacity 
+      style={styles.productCard}
+      onPress={() => handleProductPress(item)}
+      activeOpacity={0.8}
+    >
       <View style={styles.productImageContainer}>
         <Image source={{ uri: item.image }} style={styles.productImage} />
         <TouchableOpacity 
-          onPress={() => toggleFavorite(item.id)}
+          onPress={(e) => {
+            e.stopPropagation(); // Prevent triggering product navigation
+            toggleFavorite(item.id);
+          }}
           style={styles.favoriteButton}
         >
           <MaterialIcons 
@@ -62,11 +78,18 @@ const ClothingCategoryScreen = ({ navigation }) => {
           <Text style={styles.ratingText}>{item.rating}</Text>
         </View>
         <Text style={styles.productPrice}>Rs.{item.price}</Text>
-        <TouchableOpacity style={styles.addToCartButton}>
+        <TouchableOpacity 
+          style={styles.addToCartButton}
+          onPress={(e) => {
+            e.stopPropagation(); // Prevent triggering product navigation
+            // Add your add to cart logic here
+            console.log('Added to cart:', item.name);
+          }}
+        >
           <Text style={styles.addToCartText}>Add to Cart</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -78,12 +101,14 @@ const ClothingCategoryScreen = ({ navigation }) => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Clothing</Text>
         <View style={styles.headerRight}>
-          <MaterialIcons name="shopping-cart" size={24} color="white" style={{ marginRight: 12 }} />
+          <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+            <MaterialIcons name="shopping-cart" size={24} color="white" style={{ marginRight: 12 }} />
+          </TouchableOpacity>
           <MaterialIcons name="more-vert" size={24} color="white" />
         </View>
       </View>
 
-      {/* Sub Categories - Fixed height */}
+      {/* Sub Categories */}
       <View style={styles.subCategoriesWrapper}>
         <ScrollView 
           horizontal 
@@ -137,37 +162,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
-    paddingTop: 48, // Increased top padding for proper spacing
+    padding: 12,
+    paddingTop: 36,
   },
   headerTitle: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
   },
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  // Fixed subcategories container
   subCategoriesWrapper: {
-    height: 50, // Fixed height
-    paddingHorizontal: 16,
-    marginBottom: 8,
+    height: 50,
+    paddingHorizontal: 10,
+    marginBottom: 4,
     justifyContent: 'center',
   },
   subCategoriesContent: {
     alignItems: 'center',
-    gap: 12,
+    gap: 20,
   },
   subCategoryButton: {
     backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 16, // Reduced padding
-    paddingVertical: 6,    // Reduced padding
-    borderRadius: 16,      // Smaller border radius
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.3)',
-    height: 32,           // Fixed height for buttons
+    height: 28,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -177,12 +201,12 @@ const styles = StyleSheet.create({
   subCategoryText: {
     color: 'white',
     fontWeight: '500',
-    fontSize: 14,         // Slightly smaller font
+    fontSize: 14,
   },
   subCategoryTextActive: {
     color: '#8B5CF6',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 12,
   },
   productsContainer: {
     flex: 1,
@@ -193,9 +217,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   resultsText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#6B7280',
-    marginBottom: 16,
+    marginBottom: 12,
     fontWeight: '500',
   },
   productsList: {
