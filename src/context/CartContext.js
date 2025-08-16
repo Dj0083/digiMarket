@@ -4,6 +4,7 @@ import { cartAPI } from '../services/api';
 import { AuthContext } from './AuthContext';
 import Toast from 'react-native-toast-message';
 
+
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
@@ -109,6 +110,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+   
   const updateCartItem = async (cartId, quantity) => {
     try {
       if (!isAuthenticated) {

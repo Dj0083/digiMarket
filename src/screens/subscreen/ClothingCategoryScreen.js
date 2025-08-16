@@ -9,11 +9,12 @@ import {
   FlatList 
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-
-
+import { products } from '../../data/products'; // import product data
 
 const ClothingCategoryScreen = ({ navigation }) => {
   const [favorites, setFavorites] = useState(new Set());
+  const subCategories = ['All', 'Women', 'Men', 'Accessories'];
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const toggleFavorite = (id) => {
     const newFavorites = new Set(favorites);
@@ -25,28 +26,12 @@ const ClothingCategoryScreen = ({ navigation }) => {
     setFavorites(newFavorites);
   };
 
-  const clothingItems = [
-    { id: 1, name: 'Traditional Saree', price: 2500, rating: 4.8, image: 'https://via.placeholder.com/150x150', category: 'Women' },
-    { id: 2, name: 'Cotton Kurta', price: 800, rating: 4.5, image: 'https://via.placeholder.com/150x150', category: 'Men' },
-    { id: 3, name: 'Silk Blouse', price: 1200, rating: 4.6, image: 'https://via.placeholder.com/150x150', category: 'Women' },
-    { id: 4, name: 'Dhoti Set', price: 600, rating: 4.3, image: 'https://via.placeholder.com/150x150', category: 'Men' },
-    { id: 5, name: 'Embroidered Dupatta', price: 400, rating: 4.7, image: 'https://via.placeholder.com/150x150', category: 'Accessories' },
-    { id: 6, name: 'Handwoven Shawl', price: 1500, rating: 4.9, image: 'https://via.placeholder.com/150x150', category: 'Accessories' },
-  ];
-
-  const subCategories = ['All', 'Women', 'Men', 'Accessories'];
-  const [selectedCategory, setSelectedCategory] = useState('All');
-
   const filteredItems = selectedCategory === 'All' 
-    ? clothingItems 
-    : clothingItems.filter(item => item.category === selectedCategory);
+    ? products 
+    : products.filter(item => item.category === selectedCategory);
 
-  // Navigate to product detail screen
   const handleProductPress = (item) => {
-    navigation.navigate('ProductDetail', { 
-      productId: item.id,
-      product: item // Optional: pass the full product data
-    });
+    navigation.navigate('ProductDetail', { product: item });
   };
 
   const renderProduct = ({ item }) => (
@@ -59,7 +44,7 @@ const ClothingCategoryScreen = ({ navigation }) => {
         <Image source={{ uri: item.image }} style={styles.productImage} />
         <TouchableOpacity 
           onPress={(e) => {
-            e.stopPropagation(); // Prevent triggering product navigation
+            e.stopPropagation();
             toggleFavorite(item.id);
           }}
           style={styles.favoriteButton}
@@ -81,8 +66,7 @@ const ClothingCategoryScreen = ({ navigation }) => {
         <TouchableOpacity 
           style={styles.addToCartButton}
           onPress={(e) => {
-            e.stopPropagation(); // Prevent triggering product navigation
-            // Add your add to cart logic here
+            e.stopPropagation();
             console.log('Added to cart:', item.name);
           }}
         >
@@ -110,24 +94,14 @@ const ClothingCategoryScreen = ({ navigation }) => {
 
       {/* Sub Categories */}
       <View style={styles.subCategoriesWrapper}>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.subCategoriesContent}
-        >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.subCategoriesContent}>
           {subCategories.map((category) => (
             <TouchableOpacity 
               key={category}
-              style={[
-                styles.subCategoryButton,
-                selectedCategory === category && styles.subCategoryButtonActive
-              ]}
+              style={[styles.subCategoryButton, selectedCategory === category && styles.subCategoryButtonActive]}
               onPress={() => setSelectedCategory(category)}
             >
-              <Text style={[
-                styles.subCategoryText,
-                selectedCategory === category && styles.subCategoryTextActive
-              ]}>
+              <Text style={[styles.subCategoryText, selectedCategory === category && styles.subCategoryTextActive]}>
                 {category}
               </Text>
             </TouchableOpacity>
@@ -138,7 +112,6 @@ const ClothingCategoryScreen = ({ navigation }) => {
       {/* Products Grid */}
       <View style={styles.productsContainer}>
         <Text style={styles.resultsText}>{filteredItems.length} items found</Text>
-        
         <FlatList
           data={filteredItems}
           renderItem={renderProduct}
@@ -152,6 +125,7 @@ const ClothingCategoryScreen = ({ navigation }) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
