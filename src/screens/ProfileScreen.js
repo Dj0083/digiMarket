@@ -1,30 +1,50 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, BackHandler } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ProfileScreen({ navigation }) {
+
+  const handleLogout = async () => {
+  try {
+    await AsyncStorage.removeItem("authToken"); // clear token
+    Alert.alert(
+      "Logout",
+      "You have been logged out.",
+      [
+        {
+          text: "OK",
+          onPress: () => BackHandler.exitApp(), // exit the app
+        },
+      ],
+      { cancelable: false }
+    );
+  } catch (error) {
+    Alert.alert("Error", "Something went wrong while logging out.");
+  }
+};
+
   return (
     <ScrollView style={styles.container}>
       {/* Header / User Info */}
       <View style={styles.header}>
         <Image
-          source={require('../../assets/profile.png')}
+          source={require("../../assets/profile.png")}
           style={{ width: 75, height: 75, borderRadius: 37.5 }}
         />
         <View>
           <Text style={styles.username}>Hi, DJ</Text>
           <Text style={styles.subtext}>Member since 2025</Text>
           <TouchableOpacity
-        style={styles.editBtn}
-        onPress={() => navigation.navigate('EditProfile')}
-      >
-        <Text style={{ color: '#007bff', fontWeight: '600' }}>Edit Profile</Text>
-      </TouchableOpacity>
-
+            style={styles.editBtn}
+            onPress={() => navigation.navigate("EditProfile")}
+          >
+            <Text style={{ color: "#007bff", fontWeight: "600" }}>
+              Edit Profile
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
-
-      
 
       {/* Quick Actions */}
       <View style={styles.row}>
@@ -79,6 +99,14 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.menuText}>Settings</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Logout Button */}
+      <View style={styles.section}>
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+          <Ionicons name="log-out-outline" size={22} color="#fff" />
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -97,17 +125,15 @@ const styles = StyleSheet.create({
   },
   editBtn: {
     marginTop: 10,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     paddingVertical: 6,
     paddingHorizontal: 16,
     borderRadius: 20,
-    alignSelf: 'flex-start',
-    marginLeft: 20
+    alignSelf: "flex-start",
+    marginLeft: 20,
   },
   username: {
-    
     marginTop: 30,
-    align: "right",
     marginLeft: 20,
     fontSize: 18,
     fontWeight: "600",
@@ -154,5 +180,19 @@ const styles = StyleSheet.create({
   menuText: {
     fontSize: 14,
     marginLeft: 10,
+  },
+  logoutBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#ff3b30",
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  logoutText: {
+    color: "#fff",
+    fontSize: 16,
+    marginLeft: 8,
+    fontWeight: "600",
   },
 });
