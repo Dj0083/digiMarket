@@ -1,6 +1,7 @@
 import React from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 import Toast from 'react-native-toast-message';
 
 // Context

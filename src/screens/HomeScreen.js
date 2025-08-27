@@ -50,9 +50,12 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.headerTitle}>Market Place</Text>
           <View style={styles.headerRight}>
             <MaterialIcons name="shopping-cart" size={24} color="white" style={{ marginRight: 12 }} />
-            <View style={styles.profileImage}>
-              <Image source={{ uri: 'https://via.placeholder.com/40x40' }} style={styles.profileImg} />
-            </View>
+           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <Image
+            source={require('../../assets/profile.png')}
+            style={{ width: 35, height: 35, borderRadius: 18 }}
+            />
+          </TouchableOpacity>
           </View>
         </View>
 
