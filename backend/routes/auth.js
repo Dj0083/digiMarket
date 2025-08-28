@@ -1,125 +1,119 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const { pool } = require("../config/database"); // notice: pool not db
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-// POST /api/auth/login
-router.post('/login', (req, res) => {
-    try {
-        const { email, password } = req.body;
-        
-        // Placeholder login logic - replace with actual authentication
-        if (!email || !password) {
-            return res.status(400).json({
-                success: false,
-                message: 'Email and password are required'
-            });
-        }
-
-        // Placeholder response - replace with actual authentication logic
-        res.json({
-            success: true,
-            message: 'Login successful',
-            data: {
-                user: { id: 1, email, name: 'User' },
-                token: 'placeholder-jwt-token'
-            }
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Login error',
-            error: error.message
-        });
-    }
+console.log("🔍 Pool object debug:", {
+  type: typeof pool,
+  hasExecute: typeof pool.execute === 'function',
+  hasQuery: typeof pool.query === 'function',
+  hasPromise: typeof pool.promise === 'function',
+  keys: Object.keys(pool)
 });
 
 // POST /api/auth/register
-router.post('/register', (req, res) => {
-    try {
-        const { name, email, password } = req.body;
-        
-        // Placeholder registration logic
-        if (!name || !email || !password) {
-            return res.status(400).json({
-                success: false,
-                message: 'Name, email, and password are required'
-            });
-        }
+router.post("/register", async (req, res) => {
+  try {
+    const { name, email, password, phone, address } = req.body;
 
-        // Placeholder response - replace with actual registration logic
-        res.status(201).json({
-            success: true,
-            message: 'Registration successful',
-            data: {
-                user: { id: Date.now(), name, email },
-                token: 'placeholder-jwt-token'
-            }
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Registration error',
-            error: error.message
-        });
+    if (!name || !email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields required" });
     }
+
+    // Check if email already exists
+    const [existing] = await pool.execute(
+      "SELECT * FROM users WHERE email = ?",
+      [email]
+    );
+    if (existing.length > 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email already registered" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert into DB
+    const [result] = await pool.execute(
+      "INSERT INTO users (name, email, password, phone, address, created_at) VALUES (?, ?, ?, ?, ?, NOW())",
+      [name, email, hashedPassword, phone || null, address || null]
+    );
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: result.insertId },
+      process.env.JWT_SECRET || "secret",
+      { expiresIn: "7d" }
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Registration successful",
+      data: { user: { id: result.insertId, name, email }, token },
+    });
+  } catch (error) {
+    console.error("❌ Registration error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
 });
 
-// POST /api/auth/logout
-router.post('/logout', (req, res) => {
-    try {
-        // Placeholder logout logic
-        res.json({
-            success: true,
-            message: 'Logout successful'
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Logout error',
-            error: error.message
-        });
-    }
-});
+// POST /api/auth/login
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-// GET /api/auth/profile - Get current user profile
-router.get('/profile', (req, res) => {
-    try {
-        // Placeholder - replace with actual auth middleware and user lookup
-        res.json({
-            success: true,
-            message: 'Profile retrieved successfully',
-            data: {
-                user: { id: 1, name: 'User', email: 'user@example.com' }
-            }
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error retrieving profile',
-            error: error.message
-        });
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email and password required" });
     }
-});
 
-// PUT /api/auth/profile - Update user profile
-router.put('/profile', (req, res) => {
-    try {
-        const updateData = req.body;
-        
-        // Placeholder - replace with actual profile update logic
-        res.json({
-            success: true,
-            message: 'Profile updated successfully',
-            data: {
-                user: { id: 1, ...updateData }
-            }
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error updating profile',
-            error: error.message
-        });
+    const [users] = await pool.execute(
+      "SELECT * FROM users WHERE email = ?",
+      [email]
+    );
+    if (users.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email not registered" });
     }
+
+    const user = users[0];
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Incorrect password" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id },
+      process.env.JWT_SECRET || "secret",
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      success: true,
+      message: "Login successful",
+      data: { user: { id: user.id, name: user.name, email: user.email }, token },
+    });
+  } catch (error) {
+    console.error("❌ Login error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
 });
 
 module.exports = router;

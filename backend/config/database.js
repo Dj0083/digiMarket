@@ -9,7 +9,11 @@ console.log('Environment variables loaded:', {
   DB_PORT: process.env.DB_PORT,
   DB_USER: process.env.DB_USER,
   DB_NAME: process.env.DB_NAME,
-  DB_PASSWORD: process.env.DB_PASSWORD ? '***set***' : 'empty'
+  DB_PASSWORD: process.env.DB_PASSWORD ? '***set***' : 'empty',
+  port: process.env.DB_PORT || 3306,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 });
 
 // Database configuration
@@ -17,8 +21,8 @@ const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT) || 3306,
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'marketplace',
+  password: process.env.DB_PASSWORD || 'Dulani@01#',
+  database: process.env.DB_NAME || 'digi_market',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
