@@ -23,7 +23,10 @@ import ProfileScreen from '../src/screens/ProfileScreen';
 import ReviewScreen from '../src/screens/ReviewScreen';
 import CategoryScreen from '../src/screens/CategoryScreen';
 import EditProfileScreen from '../src/screens/EditProfileScreen';
-
+import PaymentMethodScreen from '../src/screens/PaymentMethodScreen';
+import HelpCenterScreen from '../src/screens/HelpCenterScreen';
+import ChatWithUsScreen from '../src/screens/ChatWithUsScreen';  
+import SettingsScreen from '../src/screens/SettingsScreen';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -88,14 +91,42 @@ const MainStack = () => {
       <Stack.Screen name="ProductList" component={ProductListScreen} />
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
-      <Stack.Screen name="OrderDetail" component={OrderDetailScreen} />
+      
       <Stack.Screen name="Review" component={ReviewScreen} />
       <Stack.Screen name="Category" component={CategoryScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-
+      <Stack.Screen name="CheckoutScreen" component={CheckoutScreen} />
+      
+      <Stack.Screen 
+        name="PaymentMethodScreen" 
+        component={PaymentMethodScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+  name="OrderDetailScreen" 
+  component={OrderDetailScreen}
+  options={{ headerShown: false }}
+/>
+<Stack.Screen 
+  name="HelpCenterScreen" 
+  component={HelpCenterScreen}
+  options={{ headerShown: false }}
+/>
+<Stack.Screen 
+  name="ChatWithUsScreen" 
+  component={ChatWithUsScreen}
+  options={{ headerShown: false }}
+/>
+<Stack.Screen 
+  name="SettingsScreen" 
+  component={SettingsScreen}
+  options={{ headerShown: false }}
+/>
+      
     </Stack.Navigator>
+    
   );
 };
 

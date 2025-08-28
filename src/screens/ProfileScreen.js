@@ -6,23 +6,23 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function ProfileScreen({ navigation }) {
 
   const handleLogout = async () => {
-  try {
-    await AsyncStorage.removeItem("authToken"); // clear token
-    Alert.alert(
-      "Logout",
-      "You have been logged out.",
-      [
-        {
-          text: "OK",
-          onPress: () => BackHandler.exitApp(), // exit the app
-        },
-      ],
-      { cancelable: false }
-    );
-  } catch (error) {
-    Alert.alert("Error", "Something went wrong while logging out.");
-  }
-};
+    try {
+      await AsyncStorage.removeItem("authToken"); // clear token
+      Alert.alert(
+        "Logout",
+        "You have been logged out.",
+        [
+          {
+            text: "OK",
+            onPress: () => BackHandler.exitApp(), // exit the app
+          },
+        ],
+        { cancelable: false }
+      );
+    } catch (error) {
+      Alert.alert("Error", "Something went wrong while logging out.");
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -45,59 +45,78 @@ export default function ProfileScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-
-      {/* Quick Actions */}
-      <View style={styles.row}>
-        <TouchableOpacity style={styles.action}>
-          <Ionicons name="cart-outline" size={24} color="#ff6600" />
-          <Text style={styles.actionText}>Orders</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.action}>
-          <Ionicons name="card-outline" size={24} color="#ff6600" />
-          <Text style={styles.actionText}>Wallet</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.action}>
-          <Ionicons name="ticket-outline" size={24} color="#ff6600" />
-          <Text style={styles.actionText}>Coupons</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.action}>
-          <Ionicons name="heart-outline" size={24} color="#ff6600" />
-          <Text style={styles.actionText}>Wishlist</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Section: Orders */}
+      
+      {/* Section: Personal Information */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>My Orders</Text>
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="cube-outline" size={22} color="#333" />
-          <Text style={styles.menuText}>To be Shipped</Text>
+        <Text style={styles.sectionTitle}>Personal Information</Text>
+        
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("EditProfile")}>
+          <Ionicons name="person-outline" size={22} color="#333" />
+          <View style={styles.menuContent}>
+            <Text style={styles.menuText}>Full Name</Text>
+            <Text style={styles.menuSubtext}>Dhanuka Jayasanka</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#ccc" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="car-outline" size={22} color="#333" />
-          <Text style={styles.menuText}>In Transit</Text>
+
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("EditProfile")}>
+          <Ionicons name="mail-outline" size={22} color="#333" />
+          <View style={styles.menuContent}>
+            <Text style={styles.menuText}>Email Address</Text>
+            <Text style={styles.menuSubtext}>dj@example.com</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#ccc" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="checkmark-circle-outline" size={22} color="#333" />
-          <Text style={styles.menuText}>Delivered</Text>
+
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("EditProfile")}>
+          <Ionicons name="call-outline" size={22} color="#333" />
+          <View style={styles.menuContent}>
+            <Text style={styles.menuText}>Phone Number</Text>
+            <Text style={styles.menuSubtext}>+94 77 123 4567</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#ccc" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("EditProfile")}>
+          <Ionicons name="location-outline" size={22} color="#333" />
+          <View style={styles.menuContent}>
+            <Text style={styles.menuText}>Address</Text>
+            <Text style={styles.menuSubtext}>Pelawatta, Battaramulla, Sri Lanka</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#ccc" />
         </TouchableOpacity>
       </View>
 
       {/* Section: Support */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Support</Text>
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="help-circle-outline" size={22} color="#333" />
-          <Text style={styles.menuText}>Help Center</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="chatbubble-outline" size={22} color="#333" />
-          <Text style={styles.menuText}>Chat with Us</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="settings-outline" size={22} color="#333" />
-          <Text style={styles.menuText}>Settings</Text>
-        </TouchableOpacity>
+        <TouchableOpacity 
+  style={styles.menuItem} 
+  onPress={() => navigation.navigate("HelpCenterScreen")}
+>
+  <Ionicons name="help-circle-outline" size={22} color="#333" />
+  <Text style={styles.menuText}>Help Center</Text>
+  <Ionicons name="chevron-forward" size={20} color="#ccc" />
+</TouchableOpacity>
+
+<TouchableOpacity 
+  style={styles.menuItem} 
+  onPress={() => navigation.navigate("ChatWithUsScreen")}
+>
+  <Ionicons name="chatbubble-outline" size={22} color="#333" />
+  <Text style={styles.menuText}>Chat with Us</Text>
+  <Ionicons name="chevron-forward" size={20} color="#ccc" />
+</TouchableOpacity>
+
+<TouchableOpacity 
+  style={styles.menuItem} 
+  onPress={() => navigation.navigate("SettingsScreen")}
+>
+  <Ionicons name="settings-outline" size={22} color="#333" />
+  <Text style={styles.menuText}>Settings</Text>
+  <Ionicons name="chevron-forward" size={20} color="#ccc" />
+</TouchableOpacity>
+
       </View>
 
       {/* Logout Button */}
@@ -177,9 +196,20 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
+  menuContent: {
+    flex: 1,
+    marginLeft: 10,
+  },
   menuText: {
     fontSize: 14,
     marginLeft: 10,
+    fontWeight: "500",
+  },
+  menuSubtext: {
+    fontSize: 12,
+    color: "#888",
+    marginLeft: 10,
+    marginTop: 2,
   },
   logoutBtn: {
     flexDirection: "row",
